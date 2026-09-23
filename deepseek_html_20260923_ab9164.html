@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Verify you are human</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="captcha">
+
+<nav>
+  <span class="brand">de.fault / IRL</span>
+  <a href="index.html">Index</a>
+  <a href="captcha.html" class="on">Captcha</a>
+  <a href="cookies.html">Cookies</a>
+  <a href="bias.html">Bias</a>
+  <a href="garden.html">Garden</a>
+</nav>
+
+<div class="captcha-wrap">
+  <div class="captcha-box">
+
+    <div class="stage on" id="stage1">
+      <h2>Verify you are human</h2>
+      <p class="q">Select all images that show someone caring for another person.</p>
+
+      <div class="tiles" id="tiles">
+        <div class="tile" data-k="bird">person feeding a bird</div>
+        <div class="tile" data-k="nurse">nurse adjusting a blanket</div>
+        <div class="tile" data-k="parent">parent holding a crying child</div>
+        <div class="tile" data-k="dog">dog waiting by a door</div>
+        <div class="tile wide" data-k="phone" data-trap="1">person on their phone while someone sleeps beside them</div>
+      </div>
+
+      <div class="bar"><span id="bar1"></span></div>
+      <p class="msg" id="msg1"></p>
+      <button class="btn" id="next1">Verify</button>
+    </div>
+
+    <div class="stage" id="stage2">
+      <h2>Verify you are human</h2>
+      <p class="q">In your own words, describe the last time you felt helpless.</p>
+      <textarea id="feel" placeholder="Be specific."></textarea>
+      <p class="msg" id="msg2"></p>
+      <button class="btn" id="next2">Submit</button>
+    </div>
+
+    <div class="stage" id="stage3">
+      <div class="locked">
+        <p>Humans are too complex to verify.</p>
+        <p class="small">Please use a different method.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const tiles   = document.querySelectorAll('.tile');
+const msg1    = document.getElementById('msg1');
+const msg2    = document.getElementById('msg2');
+const bar1    = document.getElementById('bar1');
+const stages  = [null,
+  document.getElementById('stage1'),
+  document.getElementById('stage2'),
+  document.getElementById('stage3')
+];
+let stage = 1;
+let tries = 0;
+let trapHit = false;
+
+function go(n){
+  stages[stage].classList.remove('on');
+  stage = n;
+  stages[stage].classList.add('on');
+}
+
+tiles.forEach(t => t.addEventListener('click', () => {
+  t.classList.toggle('sel');
+  if(t.dataset.trap && t.classList.contains('sel')){
+    trapHit = true;
+    msg1.textContent = 'Emotional ambiguity detected.';
+    msg1.className = 'msg bad';
+  } else {
+    trapHit = Array.from(tiles).some(x => x.dataset.trap && x.classList.contains('sel'));
+    if(!trapHit){ msg1.textContent = ''; msg1.className = 'msg'; }
+  }
+}));
+
+document.getElementById('next1').addEventListener('click', () => {
+  const picked = Array.from(tiles).filter(t => t.classList.contains('sel')).length;
+  if(picked === 0){
+    msg1.textContent = 'Select at least one image.';
+    msg1.className = 'msg bad';
+    return;
+  }
+  if(trapHit){
+    msg1.textContent = 'Emotional ambiguity detected. Try again.';
+    msg1.className = 'msg bad';
+    bar1.style.width = '20%';
+    return;
+  }
+  bar1.style.width = '50%';
+  setTimeout(() => go(2), 350);
+});
+
+document.getElementById('next2').addEventListener('click', () => {
+  const txt = document.getElementById('feel').value.trim();
+  if(txt.length < 12){
+    msg2.textContent = 'Response too short. Elaborate.';
+    msg2.className = 'msg bad';
+    return;
+  }
+  tries++;
+  if(tries < 2){
+    msg2.textContent = 'Failed. Response too generic. Try again.';
+    msg2.className = 'msg bad';
+    return;
+  }
+  msg2.textContent = 'Failed. Response too generic.';
+  msg2.className = 'msg fatal';
+  setTimeout(() => go(3), 900);
+});
+</script>
+
+</body>
+</html>

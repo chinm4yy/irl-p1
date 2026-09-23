@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Garden | de.fault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="garden">
+
+<nav>
+  <span class="brand">de.fault / IRL</span>
+  <a href="index.html">Index</a>
+  <a href="captcha.html">Captcha</a>
+  <a href="cookies.html">Cookies</a>
+  <a href="bias.html">Bias</a>
+  <a href="garden.html" class="on">Garden</a>
+</nav>
+
+<div class="garden-stage">
+  <h1>Grown in silence.</h1>
+  <p class="garden-hint" id="hint">Click the soil to plant a seed.</p>
+
+  <div class="pot" id="pot">
+    <div class="soil"></div>
+    <div class="plant" id="plant">&#127793;</div>
+  </div>
+
+  <div class="flowers" id="flowers"></div>
+</div>
+
+<script>
+const pot   = document.getElementById('pot');
+const plant = document.getElementById('plant');
+const hint  = document.getElementById('hint');
+const flowers = document.getElementById('flowers');
+
+let stage = 0;
+let timer = null;
+let lastClick = 0;
+let impatient = false;
+
+const chars = {1:'&#127793;', 2:'&#127807;', 3:'&#127803;', 4:'&#127804;'};
+
+function advance(){
+  if(stage >= 4) return;
+  stage++;
+  plant.className = 'plant s' + stage;
+  plant.innerHTML = chars[stage];
+  if(stage === 4){
+    hint.textContent = 'It bloomed. Click it to pick.';
+    clearInterval(timer);
+  } else {
+    hint.textContent = 'Growing. Leave it alone.';
+  }
+}
+
+pot.addEventListener('click', () => {
+  const now = Date.now();
+  if(now - lastClick < 700){
+    impatient = true;
+    hint.textContent = 'Plants need time. So do you.';
+    return;
+  }
+  lastClick = now;
+
+  if(stage === 0){
+    stage = 1;
+    plant.className = 'plant s1';
+    plant.innerHTML = chars[1];
+    hint.textContent = 'Growing. Leave it alone.';
+    timer = setInterval(() => {
+      if(impatient){ impatient = false; return; }
+      advance();
+    }, 5000);
+    return;
+  }
+
+  if(stage === 4){
+    const f = document.createElement('span');
+    f.innerHTML = chars[4];
+    flowers.appendChild(f);
+    stage = 0;
+    plant.className = 'plant';
+    plant.innerHTML = chars[1];
+    hint.textContent = 'Click the soil to plant another seed.';
+  }
+});
+</script>
+
+</body>
+</html>

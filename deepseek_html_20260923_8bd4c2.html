@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cookies | de.fault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <span class="brand">de.fault / IRL</span>
+  <a href="index.html">Index</a>
+  <a href="captcha.html">Captcha</a>
+  <a href="cookies.html" class="on">Cookies</a>
+  <a href="bias.html">Bias</a>
+  <a href="garden.html">Garden</a>
+</nav>
+
+<main class="simple">
+  <h1>The crumb trail</h1>
+  <p>You are the dot. Walk forward. Watch what you leave behind.</p>
+
+  <div class="path-area" id="path"></div>
+
+  <p class="msg" id="cmsg"></p>
+  <button class="btn-dark" id="walk">Walk</button>
+  <button class="btn-dark" id="clear" style="background:#333;margin-left:8px">Clear history</button>
+</main>
+
+<script>
+const path = document.getElementById('path');
+const msg  = document.getElementById('cmsg');
+let avatar = null;
+let x = 20, y = 120;
+let crumbs = [];
+let cleared = false;
+let speed = 1;
+
+const colors = ['#2f6fd0','#e0b400','#c0392b','#4caf50','#8e44ad'];
+
+function init(){
+  path.innerHTML = '';
+  avatar = document.createElement('div');
+  avatar.style.cssText = 'position:absolute;width:14px;height:14px;border-radius:50%;background:#f4f4f4;border:2px solid #ff3366;';
+  avatar.style.left = x + 'px';
+  avatar.style.top  = y + 'px';
+  path.appendChild(avatar);
+}
+init();
+
+document.getElementById('walk').addEventListener('click', () => {
+  x += 40;
+  if(x > path.clientWidth - 30){ x = 20; y += 30; }
+  if(y > path.clientHeight - 20){ y = 120; path.innerHTML=''; init(); }
+
+  const steps = cleared ? 3 : 1;
+  for(let i=0;i<steps;i++){
+    const c = document.createElement('span');
+    c.className = 'dot';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.left = (x - 8 - i*4) + 'px';
+    c.style.top  = (y + 4) + 'px';
+    path.appendChild(c);
+    crumbs.push(c);
+  }
+
+  avatar.style.left = x + 'px';
+  avatar.style.top  = y + 'px';
+
+  if(crumbs.length > 30){
+    msg.textContent = 'You cannot delete what is already baked in.';
+    msg.className = 'msg fatal';
+  }
+});
+
+document.getElementById('clear').addEventListener('click', () => {
+  crumbs.forEach(c => c.remove());
+  crumbs = [];
+  cleared = true;
+  msg.textContent = 'History cleared. Continuing.';
+  msg.className = 'msg';
+});
+</script>
+
+</body>
+</html>

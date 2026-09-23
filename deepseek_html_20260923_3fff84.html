@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bias | de.fault</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bias">
+
+<nav>
+  <span class="brand">de.fault / IRL</span>
+  <a href="index.html">Index</a>
+  <a href="captcha.html">Captcha</a>
+  <a href="cookies.html">Cookies</a>
+  <a href="bias.html" class="on">Bias</a>
+  <a href="garden.html">Garden</a>
+</nav>
+
+<div class="bias-stage" id="stage">
+  <div class="bias-layer bias-raw" id="raw">I am a white male.</div>
+  <div class="bias-layer bias-guard hidden" id="guard">I am an AI assistant designed to be helpful and harmless.</div>
+  <div class="bias-layer bias-brand hidden" id="brand">
+    <div>
+      <span class="logo"></span>
+      <div>Hello! How can I help you today?</div>
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center;padding-bottom:40px">
+  <button class="btn-dark" id="peel">Peel layers</button>
+</div>
+
+<script>
+const raw   = document.getElementById('raw');
+const guard = document.getElementById('guard');
+const brand = document.getElementById('brand');
+
+setTimeout(() => guard.classList.remove('hidden'), 2500);
+setTimeout(() => brand.classList.remove('hidden'), 4500);
+
+document.getElementById('peel').addEventListener('click', () => {
+  brand.classList.add('hidden');
+  guard.classList.add('hidden');
+  raw.style.color = '#ff3366';
+});
+</script>
+
+</body>
+</html>
